@@ -1,0 +1,50 @@
+<div class="total-content">
+
+    <div class="form-body">
+        <form action="/index/{{record.id}}?_method=PUT" method="post">
+
+            <div class="row row-col-2 mb-3">
+                <span id="directions" class="col-4">*必填欄位</span>
+                <span class="text-center col">請輸入你的支出</span>
+            </div>
+
+            <div class="row row-col-2 mb-4">
+                <label for="name" class="form-label col-4">名稱* :</label>
+                <input type="text" class="form-control col" id="name" name="name" value="{{record.name}}" required>
+            </div>
+
+            <div class="row row-col-2 mb-4">
+                <label for="date" class="form-label col-4">日期* :</label>
+                <input type="date" class="form-control col" id="date" name="date" value="{{record.date}}">
+            </div>
+
+            <div class="row row-col-2 mb-4">
+                <label for="category" class="form-label col-4">類別* :</label>
+                <select value="" class="form-select col" id="category" name="category"
+                    aria-label="Default select example">
+                    <option disabled>Select</option>
+                    <option {{#if (checkCategory record.categoryID 1)}} selected {{/if}} value="1">家居物業</option>
+                    <option {{#if (checkCategory record.categoryID 2)}} selected {{/if}} value="2">交通出行</option>
+                    <option {{#if (checkCategory record.categoryID 3)}} selected {{/if}} value="3">休閒娛樂</option>
+                    <option {{#if (checkCategory record.categoryID 4)}} selected {{/if}} value="4">餐飲食品</option>
+                    <option {{#if (checkCategory record.categoryID 5)}} selected {{/if}} value="5">其他</option>
+                </select>
+            </div>
+
+            <div class="row row-col-2 mb-4">
+                <label for="amount" class="form-label col-4">金額* :</label>
+                <input type="number" class="form-control col" id="amount" name="amount" value="{{record.amount}}">
+            </div>
+
+            <div class="row row-col-2">
+                <label for="amount" class="form-label col-4"></label>
+                <button type="submit"
+                    class="btn btn-primary col bg-body-tertiary text-body-emphasis border border-secondary">修改支出</button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<script src="/javascript/all.min.js"></script>

@@ -23,7 +23,12 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       allowNull: false,
       type: DataTypes.STRING
+    },
+    pattern: {
+      allowNull: false,
+      type: DataTypes.STRING
     }
+
   }, {
     sequelize,
     modelName: 'category',

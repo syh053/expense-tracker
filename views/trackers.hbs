@@ -1,0 +1,66 @@
+<div class="total-content">
+
+    <div class="form-group text-center">
+
+        <div class="font-content">
+            <form class="keywardValue" action="/index" method="get">
+                <select name="keyward" class="form-select border border-secondary" onchange="document.querySelector('.keywardValue').submit()" aria-label="Default select example">
+                    <option disabled selected>類別</option>
+                    <option {{#if (keywordValue keyward "1")}} selected {{/if}} value="1">家居物業</option>
+                    <option {{#if (keywordValue keyward "2")}} selected {{/if}} value="2">交通出行</option>
+                    <option {{#if (keywordValue keyward "3")}} selected {{/if}} value="3">休閒娛樂</option>
+                    <option {{#if (keywordValue keyward "4")}} selected {{/if}} value="4">餐飲食品</option>
+                    <option {{#if (keywordValue keyward "5")}} selected {{/if}} value="5">其他</option>
+                </select>
+            </form>
+
+            <div class="show-amount mt-5">
+                <div class="d-flex align-items-start">
+                    <span class="me-4">總金額 :</span>
+                    <span class="total-amount ms-3">{{total}}</span>
+                </div>
+            </div>
+
+            {{#each records as | record |}}
+            <div class="row row-cols-2">
+                <div class="card-total card border border-0 col-9" style="display: inline;">
+                    
+                    <div class="card-body row row-cols-2 px-0" {{#if (checkID record.id)}}style="background-color: #F0F0F0;"{{/if}}>
+                
+                        <div class="d-flex flex-row col-10 row row-cols-2">
+                            <div id="pattern" class="ms-3 col-2">
+                                {{{record.category.pattern}}}
+                            </div>
+                
+                            <div class="d-flex flex-column justify-content-center col">
+                                <span class="card-title m-0" style="text-align: left;">{{record.name}}</span>
+                                <span class="card-time text-start text-muted mt-1">{{record.date}}</span>
+                            </div>
+                        </div>
+                
+                        <div class="d-flex justify-content-end align-items-center text-end col-2" style="font-size: 2em;">
+                            <span class="card-time text-muted">{{record.amount}}</span>
+                        </div>
+                    </div>
+                
+                </div>
+                
+                <div class="edit-delete d-flex justify-content-center align-items-center col-3" style="display: inline;">
+                    <a class="text-black text-decoration-none me-3" href="/index/{{record.id}}/edit">修改</a>
+                    <form action="/index/{{record.id}}?_method=DELETE" method="post">
+                        <button class="btn btn-light">刪除</button>
+                    </form>
+                </div>
+
+            </div>
+            {{/each}}
+
+            <a href="/index/new" class="creat-button btn btn-primary my-4">Create</a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="/javascript/all.min.js"></script>

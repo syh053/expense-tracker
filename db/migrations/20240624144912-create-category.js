@@ -14,6 +14,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING(100)
       },
+      pattern: {
+        allowNull: false,
+        type: Sequelize.STRING(200)
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -1,0 +1,82 @@
+html,
+body {
+    min-width: 500px;
+    max-width: 700px;
+    font-family: 'Lato', 'Noto Sans TC', sans-serif;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #F0F0F0;
+    color: #333333;
+    background-color: #f6f7f8;
+    box-shadow: 0 0 2px 0;
+}
+
+.title {
+    height: 2.5em;
+    color: #F0F0F0;
+    background: #4F4F4F;
+}
+
+.second-title {
+    font-size: 24px;
+    font-weight: bolder;
+    color: #272727;
+    background: #F0F0F0;
+}
+
+.logout-button {
+    color: #FF8040;
+    background-color: #FFFFFF;
+}
+
+.form-group {
+    min-width: 500px;
+    max-width: 700px;
+    margin-top: 50px;
+}
+
+.total-amount {
+    color: #FF8040;
+    font-size: 5em;
+}
+
+#pattern {
+    font-size: 3em;
+    margin-right: 20px;
+}
+
+.fa-utensils {
+    color: #81C0C0;
+}
+
+.font-content {
+    margin: 0 auto;
+    min-width: 400px;
+    max-width: 500px;
+}
+
+.form-select {
+    min-width: 200px;
+    max-width: 400px;
+}
+
+.edit-delete {
+    background-color: #f6f7f8;
+}
+
+.creat-button {
+    position: relative;
+    right: 4em;
+    background: #FF8040;
+    border: 2px solid #333333;
+}
+
+/* new */
+.form-body {
+    max-width: 400px;
+    margin: 50px auto;  
+}
+
+#directions {
+    font-size: 14px;
+}
