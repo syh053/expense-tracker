@@ -3,14 +3,21 @@
     <div class="form-group text-center">
 
         <div class="font-content">
-            <form class="keywardValue" action="/index" method="get">
-                <select name="keyward" class="form-select border border-secondary" onchange="document.querySelector('.keywardValue').submit()" aria-label="Default select example">
+
+            {{#if message}}
+            <div class="message text-success">
+                <h4 class="mb-4">{{message}}</h4>
+            </div>
+            {{/if}}
+
+            <form class="keywordValue" action="/index" method="get">
+                <select name="keyword" class="form-select border border-secondary" onchange="document.querySelector('.keywordValue').submit()" aria-label="Default select example">
                     <option disabled selected>類別</option>
-                    <option {{#if (keywordValue keyward "1")}} selected {{/if}} value="1">家居物業</option>
-                    <option {{#if (keywordValue keyward "2")}} selected {{/if}} value="2">交通出行</option>
-                    <option {{#if (keywordValue keyward "3")}} selected {{/if}} value="3">休閒娛樂</option>
-                    <option {{#if (keywordValue keyward "4")}} selected {{/if}} value="4">餐飲食品</option>
-                    <option {{#if (keywordValue keyward "5")}} selected {{/if}} value="5">其他</option>
+                    <option {{#if (keywordValue keyword "1")}} selected {{/if}} value="1">家居物業</option>
+                    <option {{#if (keywordValue keyword "2")}} selected {{/if}} value="2">交通出行</option>
+                    <option {{#if (keywordValue keyword "3")}} selected {{/if}} value="3">休閒娛樂</option>
+                    <option {{#if (keywordValue keyword "4")}} selected {{/if}} value="4">餐飲食品</option>
+                    <option {{#if (keywordValue keyword "5")}} selected {{/if}} value="5">其他</option>
                 </select>
             </form>
 

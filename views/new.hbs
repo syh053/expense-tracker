@@ -1,7 +1,13 @@
 <div class="total-content">
 
-    <div class="form-body">
-        <form action="/index" method="post">
+    <div class="form-body ">
+        <form action="/index" method="post" novalidate>
+
+            {{#if error}}
+            <div class="error-message text-center text-danger">
+                <h4 class="mb-4">{{error}}</h4>
+            </div>
+            {{/if}}
 
             <div class="row row-col-2 mb-3">
                 <span id="directions" class="col-4">*必填欄位</span>

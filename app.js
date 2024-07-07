@@ -31,6 +31,21 @@ const { where } = require('sequelize')
 
 app.use(methodOverride('_method'))
 
+//載入 express-session
+const session = require('express-session')
+
+app.use(session({
+    secret: 'ThisIsSecret',
+    // name: 'hua',  // 存放在cookie的key，如果不寫的話預設是connect.sid
+    saveUninitialized: false,
+    resave: false
+}))
+
+//載入 connect-flash
+const flash = require('connect-flash')
+
+app.use(flash())
+
 app.get('/', (req, res) => {
     res.send('Hello, World')
 })
@@ -38,8 +53,8 @@ app.get('/', (req, res) => {
 app.get('/index', (req, res) => {
 
     // 判別是否選取類別
-    const keyward = req.query.keyward
-    const sort = req.query.keyward ? { categoryID: keyward } : {}
+    const keyword = req.query.keyword
+    const sort = req.query.keyword ? { categoryID: keyword } : {}
 
     Record.findAll({
         attributes: ['id', 'name', 'date', 'amount', 'categoryID'],
@@ -50,15 +65,30 @@ app.get('/index', (req, res) => {
     })
         .then( records => {
 
-            Record.sum('amount', { where: sort })
-                .then(total => {
-                    return res.render('trackers', { records, total, keyward })
-                })
-        })
+            try {
+
+                Record.sum('amount', { where: sort })
+                    .then(total => {
+                        return res.render('trackers', { records, total, keyword, message: req.flash('success') })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        req.flash('error', '無法顯示總畫面')
+                        return res.redirect('back')
+                    })
+                
+            } catch (err) {
+
+                console.log(err)
+                req.flash('error', '無法顯示總畫面')
+                return res.redirect('back')
+
+            }
+        })     
 })
 
 app.get('/index/new', (req, res) => {
-    res.render('new')
+    res.render('new', { error : req.flash('error')})
 })
 
 app.get('/index/:id/edit', (req, res) => {
@@ -69,25 +99,65 @@ app.get('/index/:id/edit', (req, res) => {
         raw: true
     })
         .then( record => {
-            return res.render('edit', { record })
+            return res.render('edit', { record, error: req.flash('error') })
+        })
+        .catch( err => {
+            console.log( err )
+            return res.redirect('back')
         })
 })
 
 app.post('/index', (req, res) => {
 
-    const body = req.body
+    try {
 
-    Record.create({
-        name: body.name,
-        date: body.date,
-        amount: body.amount,
-        userID: 1, //暫時用 1
-        categoryID: body.category
-    })
-        .then( () => {
-            return res.redirect('/index')
+        const body = req.body
+
+        Record.create({
+            name: body.name,
+            date: body.date,
+            amount: body.amount,
+            userID: 1, //暫時用 1
+            categoryID: body.category
         })
-    // res.send('增加費用')
+            .then(() => {
+                req.flash('success', "創建成功!")
+                return res.redirect('/index')
+            })
+            .catch( err => {
+
+                console.log(err)
+
+                if (!body.name) {
+                    req.flash('error', '未輸入名稱')
+                    return res.redirect('back')
+                }
+
+                if (!body.date) {
+                    req.flash('error', '未輸入日期')
+                    return res.redirect('back')
+                }
+
+                if (!body.category) {
+                    req.flash('error', '未輸入類別')
+                    return res.redirect('back')
+                }
+
+                if (!body.amount) {
+                    req.flash('error', '未輸入金額')
+                    return res.redirect('back')
+                }
+               
+                req.flash('error', '新增失敗')
+                return res.redirect('back')
+            })
+        
+    } catch (err) {
+        console.log( err )
+        req.flash('error', '新增失敗')
+        return res.redirect('back')
+    }
+    
 })
 
 app.put('/index/:id', (req, res) => {
@@ -105,17 +175,47 @@ app.put('/index/:id', (req, res) => {
     { where: { id } }
 )
         .then(  () => {
+
+            if (!body.name) {
+                req.flash('error', '名稱不得為空')
+                return res.redirect('back')
+            }
+
+            req.flash('success', "編輯成功!")
             return res.redirect('/index')
         })
+        .catch( err => {
 
+            console.log(err)
+
+            if (!body.date) {
+                req.flash('error', '日期不得為空')
+                return res.redirect('back')
+            }
+
+            if (!body.category) {
+                req.flash('error', '類別不得為空')
+                return res.redirect('back')
+            }
+
+            if (!body.amount) {
+                req.flash('error', '金額不得為空')
+                return res.redirect('back')
+            }
+
+            req.flash('error', '新增失敗')
+            return res.redirect('back')
+        })
 })
 
 app.delete('/index/:id', (req, res) => {
 
     const id = req.params.id
+    const keyword = req.query.keyword
 
     Record.destroy({where: { id }})
         .then( () => {
+            req.flash('success', "刪除成功!")
             return res.redirect('/index')
         })
 })
