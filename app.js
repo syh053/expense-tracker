@@ -3,10 +3,8 @@ const express = require('express')
 const app = express()
 const port = 3000
 
-//載入資料模型
-const db = require('./db/models')
-const Record = db.record
-const Category = db.category
+//載入總路由
+const router = require('./routes/index')
 
 // 啟用靜態檔案
 app.use(express.static('public'))
@@ -27,7 +25,6 @@ const handlebars = require('./handlebars')
 
 // 載入 method-override 套件
 const methodOverride = require('method-override')
-const { where } = require('sequelize')
 
 app.use(methodOverride('_method'))
 
@@ -46,180 +43,8 @@ const flash = require('connect-flash')
 
 app.use(flash())
 
-app.get('/', (req, res) => {
-    res.send('Hello, World')
-})
-
-app.get('/index', (req, res) => {
-
-    // 判別是否選取類別
-    const keyword = req.query.keyword
-    const sort = req.query.keyword ? { categoryID: keyword } : {}
-
-    Record.findAll({
-        attributes: ['id', 'name', 'date', 'amount', 'categoryID'],
-        where: sort,
-        raw: true,
-        nest: true, //能把資料整理成比較容易取用的結構
-        include: [{ model: Category, attributes: ['pattern'] }] // 利用 include 啟用 join 功能 
-    })
-        .then( records => {
-
-            try {
-
-                Record.sum('amount', { where: sort })
-                    .then(total => {
-                        return res.render('trackers', { records, total, keyword, message: req.flash('success') })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                        req.flash('error', '無法顯示總畫面')
-                        return res.redirect('back')
-                    })
-                
-            } catch (err) {
-
-                console.log(err)
-                req.flash('error', '無法顯示總畫面')
-                return res.redirect('back')
-
-            }
-        })     
-})
-
-app.get('/index/new', (req, res) => {
-    res.render('new', { error : req.flash('error')})
-})
-
-app.get('/index/:id/edit', (req, res) => {
-    const id = req.params.id
-    Record.findOne({
-        attributes: ['id', 'name', 'date', 'amount', 'categoryID'],
-        where: { id },
-        raw: true
-    })
-        .then( record => {
-            return res.render('edit', { record, error: req.flash('error') })
-        })
-        .catch( err => {
-            console.log( err )
-            return res.redirect('back')
-        })
-})
-
-app.post('/index', (req, res) => {
-
-    try {
-
-        const body = req.body
-
-        Record.create({
-            name: body.name,
-            date: body.date,
-            amount: body.amount,
-            userID: 1, //暫時用 1
-            categoryID: body.category
-        })
-            .then(() => {
-                req.flash('success', "創建成功!")
-                return res.redirect('/index')
-            })
-            .catch( err => {
-
-                console.log(err)
-
-                if (!body.name) {
-                    req.flash('error', '未輸入名稱')
-                    return res.redirect('back')
-                }
-
-                if (!body.date) {
-                    req.flash('error', '未輸入日期')
-                    return res.redirect('back')
-                }
-
-                if (!body.category) {
-                    req.flash('error', '未輸入類別')
-                    return res.redirect('back')
-                }
-
-                if (!body.amount) {
-                    req.flash('error', '未輸入金額')
-                    return res.redirect('back')
-                }
-               
-                req.flash('error', '新增失敗')
-                return res.redirect('back')
-            })
-        
-    } catch (err) {
-        console.log( err )
-        req.flash('error', '新增失敗')
-        return res.redirect('back')
-    }
-    
-})
-
-app.put('/index/:id', (req, res) => {
-
-    const id = req.params.id
-    const body = req.body
-
-    Record.update({
-        name: body.name,
-        date: body.date,
-        amount: body.amount,
-        userID: 1, //暫時用 1
-        categoryID: body.categoryID
-    },
-    { where: { id } }
-)
-        .then(  () => {
-
-            if (!body.name) {
-                req.flash('error', '名稱不得為空')
-                return res.redirect('back')
-            }
-
-            req.flash('success', "編輯成功!")
-            return res.redirect('/index')
-        })
-        .catch( err => {
-
-            console.log(err)
-
-            if (!body.date) {
-                req.flash('error', '日期不得為空')
-                return res.redirect('back')
-            }
-
-            if (!body.category) {
-                req.flash('error', '類別不得為空')
-                return res.redirect('back')
-            }
-
-            if (!body.amount) {
-                req.flash('error', '金額不得為空')
-                return res.redirect('back')
-            }
-
-            req.flash('error', '新增失敗')
-            return res.redirect('back')
-        })
-})
-
-app.delete('/index/:id', (req, res) => {
-
-    const id = req.params.id
-    const keyword = req.query.keyword
-
-    Record.destroy({where: { id }})
-        .then( () => {
-            req.flash('success', "刪除成功!")
-            return res.redirect('/index')
-        })
-})
-
+// 啟用路由 middleware
+app.use(router)
 
 app.listen(port, (req, res) => {
     console.log(`Express server is running on http://localhost:${port}`)
