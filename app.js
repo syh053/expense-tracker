@@ -31,8 +31,15 @@ app.use(methodOverride('_method'))
 //載入 express-session
 const session = require('express-session')
 
+//載入訊息 middleware
+const messageHandler = require('./middlewares/message-handler')
+
+//載入錯誤訊息 middleware
+const errorHandler = require('./middlewares/error-handler')
+
+// session設定
 app.use(session({
-    secret: 'ThisIsSecret',
+    secret: 'ThisIsSecret', //signature
     // name: 'hua',  // 存放在cookie的key，如果不寫的話預設是connect.sid
     saveUninitialized: false,
     resave: false
@@ -43,8 +50,14 @@ const flash = require('connect-flash')
 
 app.use(flash())
 
+//啟用訊息 middleware
+app.use(messageHandler)
+
 // 啟用路由 middleware
 app.use(router)
+
+//啟用錯誤訊息 middleware
+app.use(errorHandler)
 
 app.listen(port, (req, res) => {
     console.log(`Express server is running on http://localhost:${port}`)

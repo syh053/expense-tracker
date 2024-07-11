@@ -4,11 +4,7 @@
 
         <div class="font-content">
 
-            {{#if message}}
-            <div class="message text-success">
-                <h4 class="mb-4">{{message}}</h4>
-            </div>
-            {{/if}}
+            {{> message}}
 
             <form class="keywordValue" action="/index" method="get">
                 <select name="keyword" class="form-select border border-secondary" onchange="document.querySelector('.keywordValue').submit()" aria-label="Default select example">

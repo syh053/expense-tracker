@@ -6,7 +6,7 @@ const db = require('../db/models')
 const Record = db.record
 const Category = db.category
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
 
     // 判別是否選取類別
     const keyword = req.query.keyword
@@ -21,51 +21,45 @@ router.get('/', (req, res) => {
     })
         .then(records => {
 
-            try {
-
-                Record.sum('amount', { where: sort })
-                    .then(total => {
-                        return res.render('trackers', { records, total, keyword, message: req.flash('success') })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                        req.flash('error', '無法顯示總畫面')
-                        return res.redirect('back')
-                    })
-
-            } catch (err) {
-
-                console.log(err)
-                req.flash('error', '無法顯示總畫面')
-                return res.redirect('back')
-
-            }
+            Record.sum('amount', { where: sort })
+                .then(total => {
+                    return res.render('trackers', { records, total, keyword })
+                })
+                .catch( err => {
+                    err.message = '無法顯示總畫面'
+                    next(err)
+                })
         })
 })
 
 router.get('/new', (req, res) => {
-    res.render('new', { error: req.flash('error') })
+    res.render('new')
 })
 
-router.get('/:id/edit', (req, res) => {
+router.get('/:id/edit', (req, res, next) => {
     const id = req.params.id
     Record.findOne({
         attributes: ['id', 'name', 'date', 'amount', 'categoryID'],
         where: { id },
         raw: true
     })
-        .then(record => {
-            return res.render('edit', { record, error: req.flash('error') })
+        .then( record => {
+
+            if (!record) {
+                const err = new Error()
+                err.message = '查無紀錄!'
+                return next(err)
+            }
+
+            return res.render('edit', { record })
         })
-        .catch(err => {
-            console.log(err)
-            return res.redirect('back')
+        .catch( err => {
+            err.message = '無法顯示總畫面'
+            next(err)
         })
 })
 
-router.post('/', (req, res) => {
-
-    try {
+router.post('/', (req, res, next) => {
 
         const body = req.body
 
@@ -80,51 +74,44 @@ router.post('/', (req, res) => {
                 req.flash('success', "創建成功!")
                 return res.redirect('/index')
             })
-            .catch(err => {
-
-                console.log(err)
+            .catch( err => {
 
                 if (!body.name) {
-                    req.flash('error', '未輸入名稱')
-                    return res.redirect('back')
+                    err.message = '未輸入名稱'
+                    return next(err)
                 }
 
                 if (!body.date) {
-                    req.flash('error', '未輸入日期')
-                    return res.redirect('back')
+                    err.message = '未輸入日期'
+                    return next(err)
                 }
 
                 if (!body.category) {
-                    req.flash('error', '未輸入類別')
-                    return res.redirect('back')
+                    err.message = '未輸入類別'
+                    return next(err)
                 }
 
                 if (!body.amount) {
-                    req.flash('error', '未輸入金額')
-                    return res.redirect('back')
+                    err.message = '未輸入金額'
+                    return next(err)
                 }
+                
+                err.message = '新增失敗'
+                next(err)
 
-                req.flash('error', '新增失敗')
-                return res.redirect('back')
             })
-
-    } catch (err) {
-        console.log(err)
-        req.flash('error', '新增失敗')
-        return res.redirect('back')
-    }
-
 })
 
-router.put('/:id', (req, res) => {
+router.put('/:id', (req, res, next) => {
 
     const id = req.params.id
     const body = req.body
 
     // 未輸入名稱時的處理
     if (!body.name) {
-        req.flash('error', '名稱不得為空')
-        return res.redirect('back')
+        const err = new Error()
+        err.message = '未輸入名稱'
+        return next(err)
     }
 
     Record.update({
@@ -140,31 +127,29 @@ router.put('/:id', (req, res) => {
             req.flash('success', "編輯成功!")
             return res.redirect('/index')
         })
-        .catch(err => {
-
-            console.log(err)
+        .catch( err => {
 
             if (!body.date) {
-                req.flash('error', '日期不得為空')
-                return res.redirect('back')
+                err.message = '日期不得為空'
+                next(err)
             }
 
             if (!body.category) {
-                req.flash('error', '類別不得為空')
-                return res.redirect('back')
+                err.message = '類別不得為空'
+                next(err)
             }
 
             if (!body.amount) {
-                req.flash('error', '金額不得為空')
-                return res.redirect('back')
+                err.message = '金額不得為空'
+                next(err)
             }
 
-            req.flash('error', '新增失敗')
-            return res.redirect('back')
+            err.message= '編輯失敗'
+            next(err)
         })
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req, res, next) => {
 
     const id = req.params.id
     const keyword = req.query.keyword
@@ -173,6 +158,10 @@ router.delete('/:id', (req, res) => {
         .then(() => {
             req.flash('success', "刪除成功!")
             return res.redirect('/index')
+        })
+        .catch( err => {
+            err.message = '刪除失敗'
+            next(err)
         })
 })
 
