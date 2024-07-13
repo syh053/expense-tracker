@@ -3,6 +3,11 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+// 在 NODE_ENV 為 development 的條件下，使用 dotenv 套件設定環境變數
+if (process.env.NODE_ENV === 'development') {
+    require('dotenv').config()
+}
+
 //載入總路由
 const router = require('./routes/index')
 
@@ -39,7 +44,7 @@ const errorHandler = require('./middlewares/error-handler')
 
 // session設定
 app.use(session({
-    secret: 'ThisIsSecret', //signature
+    secret: process.env.SESSION_SECRET , //signature
     // name: 'hua',  // 存放在cookie的key，如果不寫的話預設是connect.sid
     saveUninitialized: false,
     resave: false
