@@ -25,6 +25,7 @@ body {
 }
 
 .logout-button {
+    margin-right: 50px;
     color: #FF8040;
     background-color: #FFFFFF;
 }
