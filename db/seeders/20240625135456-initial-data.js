@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs')
+
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
@@ -6,18 +8,20 @@ module.exports = {
 
     const t = await queryInterface.sequelize.transaction();
 
+    const hash = bcrypt.hashSync("12345678", 10);  //雜湊處理(同步)
+
     try {
 
       await queryInterface.bulkInsert('users', [
         { name: '廣志',
           mail: "user1@example.com",
-          password: "12345678",
+          password: hash,
           createdAt: new Date(),
           updatedAt: new Date()
         },
         { name: '小新',
           mail: "user2@example.com",
-          password: "12345678",
+          password: hash,
           createdAt: new Date(),
           updatedAt: new Date()
         }
