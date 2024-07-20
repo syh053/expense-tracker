@@ -14,7 +14,9 @@ const localStrategy = require('passport-local')
 
 // 載入 bcryptjs 套件
 const bcrypt = require('bcryptjs')
-const message = require('../middlewares/message-handler')
+
+// 載入 checkInput middleware
+const checkInput = require('../middlewares/check-input')
 
 // 設置 passport-local
 passport.use(new localStrategy({ usernameField: 'mail' },
@@ -59,25 +61,7 @@ router.get('/', (req, res) => {
     res.render('login')
 })
 
-router.post('/',(req, res, next) => {
-
-    const { mail, password } = req.body
-
-    //確認是否輸入信箱
-    if (!mail) { 
-        req.flash('error', '未輸入信箱')
-        res.redirect('back')
-    }
-
-    //確認是否輸入密碼
-    if (!password) {
-        req.flash('error', '未輸入密碼')
-        res.redirect('back')
-    }
-
-    next()
-
-}, passport.authenticate('local', {
+router.post('/', checkInput, passport.authenticate('local', {
 
     successRedirect: '/index',
     failureRedirect: '/login',

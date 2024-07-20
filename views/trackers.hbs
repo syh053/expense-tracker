@@ -17,6 +17,7 @@
             <form class="keywordValue" action="/index" method="get">
                 <select name="keyword" class="form-select border border-secondary" onchange="document.querySelector('.keywordValue').submit()" aria-label="Default select example">
                     <option disabled selected>類別</option>
+                    <option {{#if (keywordValue keyword "0")}} selected {{/if}} value="0">全部</option>
                     <option {{#if (keywordValue keyword "1")}} selected {{/if}} value="1">家居物業</option>
                     <option {{#if (keywordValue keyword "2")}} selected {{/if}} value="2">交通出行</option>
                     <option {{#if (keywordValue keyword "3")}} selected {{/if}} value="3">休閒娛樂</option>

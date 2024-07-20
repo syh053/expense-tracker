@@ -8,14 +8,22 @@ const Category = db.category
 
 router.get('/', (req, res, next) => {
 
-    console.log('session :', req.session)
-    const id = req.session.passport.user.id
+    // console.log('session :', req.session)
+    console.log('user :', req.user)
+    const id = req.user.id
 
-    // 判別是否選取類別，及判斷 userID
+    // 類別參數
     const keyword = req.query.keyword
-    const sort = req.query.keyword ?
+
+    //判斷類別及 userID
+    let sort = req.query.keyword ?
     { categoryID: keyword, userID: id } :
     { userID: id }
+
+    // 類別選擇全部時
+    if (keyword === '0') {
+        sort = { userID: id }
+    }
 
     Record.findAll({
         attributes: ['id', 'name', 'date', 'amount', 'categoryID'],
@@ -28,6 +36,12 @@ router.get('/', (req, res, next) => {
 
             Record.sum('amount', { where: sort })
                 .then(total => {
+
+                    if (!total) {
+                        const total = 0
+                        return res.render('trackers', { records, total, keyword })
+                    }
+
                     return res.render('trackers', { records, total, keyword })
                 })
                 .catch( err => {
