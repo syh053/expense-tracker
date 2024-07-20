@@ -50,6 +50,12 @@ app.use(session({
     resave: false
 }))
 
+//載入 passport 套件
+const passport = require('passport')
+
+app.use(passport.initialize())
+app.use(passport.session())     // 需要設定反序列化(deserializeUser)到會話(session)，否則會跳錯誤
+
 //載入 connect-flash
 const flash = require('connect-flash')
 

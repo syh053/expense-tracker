@@ -8,9 +8,14 @@ const Category = db.category
 
 router.get('/', (req, res, next) => {
 
-    // 判別是否選取類別
+    console.log('session :', req.session)
+    const id = req.session.passport.user.id
+
+    // 判別是否選取類別，及判斷 userID
     const keyword = req.query.keyword
-    const sort = req.query.keyword ? { categoryID: keyword } : {}
+    const sort = req.query.keyword ?
+    { categoryID: keyword, userID: id } :
+    { userID: id }
 
     Record.findAll({
         attributes: ['id', 'name', 'date', 'amount', 'categoryID'],
@@ -19,7 +24,7 @@ router.get('/', (req, res, next) => {
         nest: true, //能把資料整理成比較容易取用的結構
         include: [{ model: Category, attributes: ['pattern'] }] // 利用 include 啟用 join 功能 
     })
-        .then(records => {
+        .then( records => {
 
             Record.sum('amount', { where: sort })
                 .then(total => {
@@ -62,12 +67,13 @@ router.get('/:id/edit', (req, res, next) => {
 router.post('/', (req, res, next) => {
 
         const body = req.body
+        const id = req.session.passport.user.id
 
         Record.create({
             name: body.name,
             date: body.date,
             amount: body.amount,
-            userID: 1, //暫時用 1
+            userID: id,
             categoryID: body.category
         })
             .then(() => {
