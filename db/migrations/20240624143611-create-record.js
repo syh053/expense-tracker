@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
       amount: {
         allowNull: false,
         validate: {
-          min: 0, //最小值為 0
+          min: 0 // 最小值為 0
         },
         type: Sequelize.INTEGER
       },
@@ -40,4 +40,4 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     queryInterface.dropTable('records')
   }
-};
+}

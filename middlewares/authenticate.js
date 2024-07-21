@@ -1,11 +1,10 @@
 const Auth = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next()
-    }
+  if (req.isAuthenticated()) {
+    return next()
+  }
 
-    req.flash('error', '尚未登入')
-    return res.redirect('/login')
-
+  req.flash('error', '尚未登入')
+  return res.redirect('/login')
 }
 
 module.exports = Auth

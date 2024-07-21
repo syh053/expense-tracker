@@ -23,11 +23,11 @@ router.use('/register', registers)
 router.use('/login', OAuth)
 
 router.get('/', (req, res) => {
-    res.send('Hello, World')
+  res.send('Hello, World')
 })
 
 router.post('/logout', (req, res) => {
-    res.redirect('/login')
+  res.redirect('/login')
 })
 
 module.exports = router

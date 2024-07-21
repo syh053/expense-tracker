@@ -1,26 +1,26 @@
 const bcrypt = require('bcryptjs')
 
-'use strict';
+'use strict'
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
+    const t = await queryInterface.sequelize.transaction()
 
-    const t = await queryInterface.sequelize.transaction();
-
-    const hash = bcrypt.hashSync("12345678", 10);  //雜湊處理(同步)
+    const hash = bcrypt.hashSync('12345678', 10) // 雜湊處理(同步)
 
     try {
-
       await queryInterface.bulkInsert('users', [
-        { name: '廣志',
-          mail: "user1@example.com",
+        {
+          name: '廣志',
+          mail: 'user1@example.com',
           password: hash,
           createdAt: new Date(),
           updatedAt: new Date()
         },
-        { name: '小新',
-          mail: "user2@example.com",
+        {
+          name: '小新',
+          mail: 'user2@example.com',
           password: hash,
           createdAt: new Date(),
           updatedAt: new Date()
@@ -107,17 +107,14 @@ module.exports = {
       }], { transaction: t })
 
       await t.commit()
-      
     } catch (error) {
-
       await t.rollback()
-      
     }
-  }, 
+  },
 
   async down (queryInterface, Sequelize) {
     await queryInterface.bulkDelete('records', null)
     await queryInterface.bulkDelete('users', null)
     await queryInterface.bulkDelete('categorys', null)
   }
-};
+}

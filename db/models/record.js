@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 const {
   Model
-} = require('sequelize');
+} = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class record extends Model {
     /**
@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate (models) {
       record.belongsTo(models.user, {
         foreignKey: 'userID'
-      }),
+      })
       record.belongsTo(models.category, {
         foreignKey: 'categoryID'
       })
@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     amount: {
       allowNull: false,
       validate: {
-        min: 0, //最小值為 0
+        min: 0 // 最小值為 0
       },
       type: DataTypes.INTEGER
     },
@@ -52,6 +52,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'record',
     tableName: 'records'
-  });
-  return record;
-};
+  })
+  return record
+}
