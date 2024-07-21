@@ -51,7 +51,7 @@ app.use(session({
 }))
 
 //載入 passport 套件
-const passport = require('passport')
+const passport = require('./config/passport')
 
 app.use(passport.initialize())
 app.use(passport.session())     // 需要設定反序列化(deserializeUser)到會話(session)，否則會跳錯誤
