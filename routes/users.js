@@ -11,6 +11,7 @@ const User = db.user
 //載入 passport 套件
 const passport = require('passport')
 const localStrategy = require('passport-local')
+const facebookStrategy = require('passport-facebook')
 
 // 載入 bcryptjs 套件
 const bcrypt = require('bcryptjs')
@@ -47,6 +48,47 @@ passport.use(new localStrategy({ usernameField: 'mail' },
 
     }))
 
+// 設置 passport-facebook 
+passport.use(new facebookStrategy({
+    clientID: process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    callbackURL: process.env.FACEBOOK_CALLBACKURL,
+    profileFields: ['id', 'displayName', 'photos', 'email']
+}, (accessToken, refreshToken, profile, done) => {
+
+    const email = profile.emails[0].value
+    const name = profile.displayName
+
+    User.findOne({
+        attributes: ['id', 'name', 'mail'],
+        where: { mail: email }
+    })
+        .then( user => {
+
+            // 若有資料，直接呼叫 callback
+            if ( user ) return done(null, user)
+
+            // 若沒有資料，則建立使用者資料，首先建立密碼
+            const randomPwd = Math.random().toString(36).slice(-8)
+
+            const hash = bcrypt.hash(randomPwd, 10)
+                .then( hash => {
+                    return User.create({
+                        name,
+                        mail: email,
+                        password: hash
+                    })
+                })
+
+                .then( user => done(null, user))
+
+                .catch( err => done(err))
+
+        })
+
+        .catch(err => done(err)) 
+}))
+
 passport.serializeUser( (user, done) => {
     const { id, name, mail } = user
     done(null, { id, name, mail })
@@ -69,5 +111,17 @@ router.post('/', checkInput, passport.authenticate('local', {
 
 }))
 
+router.get('/facebook',
+    passport.authenticate('facebook', { scope: ['email'] }))
+
+router.get('/oauth/facebook/redirect',
+    passport.authenticate('facebook', {
+
+        successRedirect: '/index',
+        failureRedirect: '/login',
+        failureFlash: true  // 啟用 flash 功能
+
+    }
+))
 
 module.exports = router
