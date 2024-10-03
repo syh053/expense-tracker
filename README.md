@@ -1,15 +1,19 @@
 # 老爸的私房錢
 
+## 應用程式說明
+
 這是使用 Node.js 搭配 Express 框架、express-handlebars 樣板引擎及 MySQL 資料庫製作的記帳工具。
 
 ## 使用畫面
 
-登入、註冊頁面
 ![alt tag](https://ppt.cc/fXtjyx@.png)
+
+登入、註冊頁面
 
 ![alt tag](https://ppt.cc/fvSURx@.png)
 
 首頁
+
 ![alt tag](https://ppt.cc/fkuOsx@.png)
 
 ## 應用程式功能說明
@@ -32,7 +36,7 @@
 
 5. 使用者可以利用分類按鈕篩選清單
 
-## 應用程式使用說明
+## 使用說明
 
 1. 使用 Git Bash 終端機將專案 clone 至本機
 
